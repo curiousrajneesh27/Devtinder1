@@ -6,7 +6,7 @@ import { useGlobalStore } from "../store/useStore";
 import notificationSound from "../assets/sounds/notification.mp3";
 
 const useConnectSocket = (userId) => {
-    const { user, updateMessages } = useGlobalStore();
+    const { user, updateMessages, addOnlineUser, removeOnlineUser, setTyping } = useGlobalStore();
     const [socket, setSocket] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -21,11 +21,25 @@ const useConnectSocket = (userId) => {
         });
         setSocket(newSocket);
 
+        // Emit userOnline when connected
+        if (user?._id) {
+            newSocket.emit("userOnline", user._id);
+        }
+
+        // Listen for user status changes
+        newSocket.on("userStatusChanged", ({ userId: onlineUserId, isOnline }) => {
+            if (isOnline) {
+                addOnlineUser(onlineUserId);
+            } else {
+                removeOnlineUser(onlineUserId);
+            }
+        });
+
         return () => {
             newSocket.close();
             setSocket(null);
         };
-    }, []);
+    }, [user?._id]);
 
     useEffect(() => {
         if (!socket || !user?._id || !userId) return;
@@ -47,17 +61,30 @@ const useConnectSocket = (userId) => {
                 setTimeout(() => {
                     recentlyPlayed.current = false;
                 }, 300);
+
+                // Show browser notification if supported
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("New Message", {
+                        body: `${newMessage.senderId.name}: ${newMessage.message || "Sent a file"}`,
+                        icon: newMessage.senderId.photoUrl
+                    });
+                }
             }
+        });
+
+        // Listen for typing indicators
+        socket.on("userTyping", ({ userId: typingUserId, isTyping }) => {
+            setTyping(typingUserId, isTyping);
         });
 
         return () => {
             socket.off("error");
             socket.off("messageReceived");
+            socket.off("userTyping");
         };
-    }, [socket, user?._id, user?.name, userId, navigate, updateMessages]);
+    }, [socket, user?._id, user?.name, userId, navigate, updateMessages, setTyping]);
 
     return { socket, isLoading };
 };
 
 export default useConnectSocket;
-

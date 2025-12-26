@@ -11,6 +11,9 @@ export const useGlobalStore = create(
                 requests: [],
                 connections: [],
                 messages: [],
+                onlineUsers: [],
+                typingUsers: {},
+                activityStats: null,
 
                 // Actions
                 addUser: (userData) => set({ user: userData }),
@@ -32,7 +35,27 @@ export const useGlobalStore = create(
 
                 addMessages: (messagesData) => set({ messages: messagesData }),
                 updateMessages: (newMessage) => set((state) => ({ messages: [...state.messages, newMessage] })),
-                clearMessages: () => set({ messages: [] })
+                clearMessages: () => set({ messages: [] }),
+
+                // Online users
+                setOnlineUsers: (users) => set({ onlineUsers: users }),
+                addOnlineUser: (userId) =>
+                    set((state) => ({
+                        onlineUsers: [...new Set([...state.onlineUsers, userId])]
+                    })),
+                removeOnlineUser: (userId) =>
+                    set((state) => ({
+                        onlineUsers: state.onlineUsers.filter((id) => id !== userId)
+                    })),
+
+                // Typing indicators
+                setTyping: (userId, isTyping) =>
+                    set((state) => ({
+                        typingUsers: { ...state.typingUsers, [userId]: isTyping }
+                    })),
+
+                // Activity stats
+                setActivityStats: (stats) => set({ activityStats: stats })
             }),
             {
                 name: "devtinder_userInfo",

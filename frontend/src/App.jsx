@@ -16,6 +16,7 @@ const Requests = lazy(() => import("./pages/Requests"));
 const Connections = lazy(() => import("./pages/Connections"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Pricing = lazy(() => import("./pages/Pricing"));
+const MatchSuggestions = lazy(() => import("./pages/MatchSuggestions"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => {
@@ -85,6 +86,14 @@ const App = () => {
                         element={
                             <ProtectedRoute>
                                 <Chat />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/match-suggestions"
+                        element={
+                            <ProtectedRoute>
+                                <MatchSuggestions />
                             </ProtectedRoute>
                         }
                     />

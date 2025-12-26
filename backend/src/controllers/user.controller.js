@@ -108,4 +108,65 @@ const userFeed = AsyncHandler(async (req, res, next) => {
     });
 });
 
-export { receivedConnectionRequests, allConnections, userFeed };
+// Daily Match Suggestions
+const getMatchSuggestions = AsyncHandler(async (req, res, next) => {
+    const loggedInUser = req.user;
+
+    if (!loggedInUser.skills || loggedInUser.skills.length === 0) {
+        return res.status(200).json({
+            success: true,
+            message: "Add skills to get match suggestions",
+            data: []
+        });
+    }
+
+    // Get all connections to exclude
+    const allConnections = await ConnectionRequestModel.find({
+        $or: [{ senderId: loggedInUser._id }, { receiverId: loggedInUser._id }]
+    });
+
+    const usersToExclude = new Set();
+    allConnections.forEach((connection) => {
+        usersToExclude.add(connection.senderId._id.toString());
+        usersToExclude.add(connection.receiverId._id.toString());
+    });
+
+    // Add blocked users
+    if (loggedInUser.blockedUsers) {
+        loggedInUser.blockedUsers.forEach((blockedUserId) => {
+            usersToExclude.add(blockedUserId.toString());
+        });
+    }
+
+    // Find users with matching skills
+    const suggestions = await UserModel.find({
+        $and: [
+            { _id: { $nin: Array.from(usersToExclude) } },
+            { _id: { $ne: loggedInUser._id } },
+            { skills: { $in: loggedInUser.skills } },
+            { blockedUsers: { $nin: [loggedInUser._id] } }
+        ]
+    })
+        .select(USER_SAFE_DATA)
+        .limit(10);
+
+    // Add match score
+    const suggestionsWithScore = suggestions.map((user) => {
+        const matchScore = user.skills?.filter((skill) => loggedInUser.skills.includes(skill)).length || 0;
+        return {
+            ...user.toObject(),
+            matchScore
+        };
+    });
+
+    // Sort by match score
+    suggestionsWithScore.sort((a, b) => b.matchScore - a.matchScore);
+
+    res.status(200).json({
+        success: true,
+        message: "Fetched match suggestions successfully",
+        data: suggestionsWithScore
+    });
+});
+
+export { receivedConnectionRequests, allConnections, userFeed, getMatchSuggestions };
