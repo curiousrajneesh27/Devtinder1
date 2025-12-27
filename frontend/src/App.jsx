@@ -15,7 +15,6 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Requests = lazy(() => import("./pages/Requests"));
 const Connections = lazy(() => import("./pages/Connections"));
 const Chat = lazy(() => import("./pages/Chat"));
-const Pricing = lazy(() => import("./pages/Pricing"));
 const MatchSuggestions = lazy(() => import("./pages/MatchSuggestions"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -98,10 +97,7 @@ const App = () => {
                         }
                     />
                     <Route
-                        path="/pricing"
-                        element={<Pricing />}
-                    />
-                    <Route
+
                         path="*"
                         element={<NotFound />}
                     />

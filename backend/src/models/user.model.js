@@ -70,14 +70,6 @@ const userSchema = new mongoose.Schema(
                 }
             }
         },
-        subscriptionPlan: {
-            type: String,
-            enum: ["free", "premium", "gold"],
-            default: "free"
-        },
-        subscriptionEndDate: {
-            type: Date
-        },
         blockedUsers: [
             {
                 type: mongoose.Schema.Types.ObjectId,

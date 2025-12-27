@@ -61,18 +61,6 @@ const Header = () => {
                                         <Link to="/connections">Connections</Link>
                                     </li>
                                     <li>
-                                        <Link to="/pricing">
-                                            <span className="flex items-center gap-2">
-                                                Pricing
-                                                {user?.subscriptionPlan !== "free" && (
-                                                    <span className="badge badge-primary badge-sm">
-                                                        {user?.subscriptionPlan}
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </Link>
-                                    </li>
-                                    <li>
                                         <span onClick={onLogout}>Logout</span>
                                     </li>
                                 </div>
