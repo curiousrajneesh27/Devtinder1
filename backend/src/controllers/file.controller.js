@@ -1,4 +1,4 @@
-import { asyncHandler, ErrorHandler, SuccessHandler } from "../utils/handlers.js";
+import { AsyncHandler, ErrorHandler } from "../utils/handlers.js";
 import { MessageModel } from "../models/message.model.js";
 import { ChatModel } from "../models/chat.model.js";
 import { ConnectionRequestModel } from "../models/connectionRequest.model.js";
@@ -6,7 +6,7 @@ import { UserModel } from "../models/user.model.js";
 import mongoose from "mongoose";
 
 // Upload file in message
-export const uploadFile = asyncHandler(async (req, res) => {
+export const uploadFile = AsyncHandler(async (req, res) => {
     const { senderId, receiverId, messageType, codeLanguage } = req.body;
     const file = req.file;
 

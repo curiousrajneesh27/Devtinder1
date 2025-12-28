@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGlobalStore } from "../../store/useStore";
 import { FaEye, FaHeart, FaUsers, FaChartLine } from "react-icons/fa";
-import axiosInstance from "../../utils/axiosInstance";
+import { axiosInstance } from "../../utils/axiosInstance";
 import toast from "react-hot-toast";
 
 const ActivityStats = () => {
